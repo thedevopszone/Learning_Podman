@@ -165,13 +165,143 @@ ADD is also good for url files
 ADD https://softxpert.de/files/index.html /var/www/html/
 ```
 
+## EXPOSE
+
+Inspect the Port
+```
+podman pull docker.io/tomcat
+
+# Search for ExposedPorts:
+podman inspect docker.io/tomcat | more
+
+
+"ExposedPorts": {
+  "8080/tcp": {}
+}
+```
 
 
 
+```
+# This is an comment
+FROM docker.io/centos:8
+RUN yum update && yum install httpd php -y && yum clean all -y
+LABEL author Thomas Mundt
+LABEL desription This ia Apache PHP Image based on CentOS 8
+COPY index.html /var/www/html/
+EXPOSE 80 # NEW
+CMD ["/sbin/httpd", "-DFOREGROUND"]  
+
+```
+
+You can also use -P to expose all exposed Ports with a random port number
+```
+podman rub -P -d myhttpd
+
+podman port -l
+```
+
+## VOLUME
+
+```
+FROM docker.io/centos:8
+RUN yum update && yum install httpd php -y && yum clean all -y
+LABEL author Thomas Mundt
+LABEL desription This ia Apache PHP Image based on CentOS 8
+COPY index.html /var/www/html/
+EXPOSE 80 
+VOLUME /data # NEW
+CMD ["/sbin/httpd", "-DFOREGROUND"]  
 
 
+```
 
 
+## WORKDIR
+
+```
+FROM docker.io/centos:8
+RUN yum update && yum install httpd php -y && yum clean all -y
+LABEL author Thomas Mundt
+LABEL desription This ia Apache PHP Image based on CentOS 8
+COPY index.html /var/www/html/
+EXPOSE 80 
+VOLUME /data
+WORKDIR /var/www/html # NEW
+CMD ["/sbin/httpd", "-DFOREGROUND"]  
 
 
+```
+
+
+## ENV
+
+```
+FROM docker.io/centos:8
+RUN yum update && yum install httpd php -y && yum clean all -y
+LABEL author Thomas Mundt
+LABEL desription This ia Apache PHP Image based on CentOS 8
+COPY index.html /var/www/html/
+EXPOSE 80 
+VOLUME /data
+WORKDIR /var/www/html
+ENV APIKEY abcd12345 # Or: ENV APIKEY=abcd12345
+CMD ["/sbin/httpd", "-DFOREGROUND"]  
+```
+
+Overwrite while running container
+```
+podman run -it --rm -e APIKEY=888888 mythhpd bash
+```
+
+## USER
+
+Not good because running as root
+```
+FROM docker.io/centos:7
+WORKDIR /opt/src # If directory not exists it will be created
+ADD src.tar.gz /opt/src/
+EXPOSE 80
+CMD python -m SimpleHTTPServer 80
+```
+
+```
+podman build -t mypyapp:v1 .
+podman run -d -P myapp:v1
+podman ps
+podman top funny_crazy
+```
+
+```
+Priveleged Ports are from 1 to 1024
+
+```
+
+Better as non root and none priveleged port
+```
+FROM docker.io/centos:7
+WORKDIR /opt/src # If directory not exists it will be created
+ADD src.tar.gz /opt/src/
+RUN chown -R 1500 /opt/src
+EXPOSE 8080
+USER 1500
+CMD python -m SimpleHTTPServer 8080
+```
+
+```
+podman top <container_name>
+
+#You can also check on your host
+ps -ef | grep SimpleHTTPServer
+
+podman port -l
+```
+
+
+## ENTRYPOINT
+
+```
+FROM docker.io/alpine:latest
+CMD ["ping", "-c3", "localhost"]
+```
 
