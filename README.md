@@ -160,7 +160,7 @@ When you use COPY the tar file will only be copied but not extracted
 ADD scr.tar.gz /tmp/
 ```
 
-ADD is also god for url files
+ADD is also good for url files
 ```
 ADD https://softxpert.de/files/index.html /var/www/html/
 ```
