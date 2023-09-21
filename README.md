@@ -45,6 +45,51 @@ podman build -t myimagename:v1 -f filename
 podman build -t myimagename:v1 --no-cache .
 ```
 
+## Dockerfile Commands
+
+```
+FROM
+RUN
+LABEL
+CMD
+EXPOSE
+ENV
+COPY
+ADD
+VOLUME
+USER
+WORKDIR
+ENTRYPOINT
+```
+
+vi Dockerfile
+```
+# This is an comment
+FROM docker.io/centos:8
+RUN yum update -y
+RUN yum clean all -y  # Clean cache to make image smaller
+RUN yum install httpd php -y
+RUN yum clean all -y  # Clean cache to make image smaller
+```
+
+Build
+```
+podman build . -t myhttpd
+
+podman history myhttpd
+```
+
+Better
+```
+# This is an comment
+FROM docker.io/centos:8
+RUN yum update && yum install httpd php -y && yum clean all -y
+
+```
+
+
+
+
 
 
 
