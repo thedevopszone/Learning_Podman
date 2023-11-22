@@ -1,5 +1,29 @@
 # Learning Podman
 
+## Configure Podman
+
+Set subuid and subgid
+```
+touch /etc/subuid /etc/subgid
+chmod 644 /etc/subuid /etc/subgid
+
+usermod --add-subuids 100000-165535 --add-subgids 100000-165535 tmundt
+# or
+---
+vi /etc/subuid
+tmundt:100000:65536
+
+vi /etc/subgui
+tmundt:100000:65536
+---
+
+# then
+podman system migrate
+
+```
+
+
+
 
 ## Starting Container
 
