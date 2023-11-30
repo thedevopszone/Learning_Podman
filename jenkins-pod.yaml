@@ -1,0 +1,42 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.6.1
+
+# NOTE: If you generated this yaml from an unprivileged and rootless podman container on an SELinux
+# enabled system, check the podman generate kube man page for steps to follow to ensure that your pod/container
+# has the right permissions to access the volumes added.
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2023-11-30T12:43:38Z"
+  labels:
+    app: jenkins-pod
+  name: jenkins-pod
+spec:
+  containers:
+  - image: docker.io/jenkins/jenkins:lts-jdk17
+    name: jenkins
+    ports:
+    - containerPort: 8080
+      hostPort: 8080
+    - containerPort: 50000
+      hostPort: 50000
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /var/jenkins_home
+      name: jenkins-data-pvc
+    - mountPath: /certs/client
+      name: jenkins-docker-certs-pvc
+      readOnly: true
+  volumes:
+  - name: jenkins-data-pvc
+    persistentVolumeClaim:
+      claimName: jenkins-data
+  - name: jenkins-docker-certs-pvc
+    persistentVolumeClaim:
+      claimName: jenkins-docker-certs
+      readOnly: true
+
