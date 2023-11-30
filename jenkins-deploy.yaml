@@ -1,7 +1,10 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jenkins
+  labels:
+    app: jenkins
 spec:
   replicas: 1
   selector:
@@ -14,15 +17,25 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: jenkins/jenkins:lts
+        image: docker.io/jenkins/jenkins:lts-jdk17
         ports:
           - name: http-port
             containerPort: 8080
           - name: jnlp-port
             containerPort: 50000
+        securityContext:
+          privileged: true
         volumeMounts:
-          - name: jenkins-vol
-            mountPath: /var/jenkins_vol
+          - mountPath: /var/jenkins_home
+            name: jenkins-data-pvc
+          - mountPath: /certs/client
+            name: jenkins-docker-certs-pvc
+            readOnly: true
       volumes:
-        - name: jenkins-vol
-          emptyDir: {}
+        - name: jenkins-data-pvc
+          persistentVolumeClaim:
+            claimName: jenkins-data
+        - name: jenkins-docker-certs-pvc
+          persistentVolumeClaim:
+            claimName: jenkins-docker-certs
+            readOnly: true
