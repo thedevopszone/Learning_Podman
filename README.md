@@ -345,3 +345,54 @@ FROM docker.io/alpine:latest
 CMD ["ping", "-c3", "localhost"]
 ```
 
+### Systemd
+
+Create Container
+```
+podman run -d --name sonarqube -p 9000:9000/tcp \
+-v sonarqube-config:/opt/sonarqube:Z \
+docker.io/sonarqube:latest
+```
+
+
+
+Rootfull
+```
+podman top sonarqube hpid pid user args
+kill -9 6563
+podman generate systemd --help
+podman generate systemd sonarqube > /etc/systemd/system/sonarqube-container.service
+systemctl daemon-reload
+systemctl status sonarqube-container
+kill -9 888
+journalctl -u sonarqube-container
+
+systemctl is-enabled sonarqube-container
+```
+
+
+rootless
+```
+mkdir -p /home/podman/.config/systemd/user/
+podman generate systemd sonarqube > /home/podman/.config/systemd/user/sonarqube-container.service
+
+vi /home/podman/.config/systemd/user/sonarqube-container.service
+
+```
+[Install]
+WantedBy=default.target
+```
+
+systemctl --user daemon-reload
+systemctl --user start sonarqube-container
+systemctl --user enable sonarqube-container
+
+When logged out the container will stop
+
+Fix:
+
+sudo loginctl enable-linger tmundt
+
+```
+
+
