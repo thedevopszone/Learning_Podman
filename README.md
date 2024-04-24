@@ -378,10 +378,9 @@ podman generate systemd sonarqube > /home/podman/.config/systemd/user/sonarqube-
 
 vi /home/podman/.config/systemd/user/sonarqube-container.service
 
-```
 [Install]
 WantedBy=default.target
-```
+
 
 systemctl --user daemon-reload
 systemctl --user start sonarqube-container
