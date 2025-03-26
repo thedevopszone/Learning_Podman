@@ -1,0 +1,52 @@
+```
+sudo useradd -m -s /bin/bash podman
+sudo passwd podman
+sudo usermod -aG wheel podman
+```
+
+
+```
+sudo dnf install -y podman
+podman --version
+```
+
+
+Wenn du Podman rootless nutzen willst
+```
+sudo loginctl enable-linger podman
+```
+
+Dann als podman user einloggen
+```
+su - podman
+podman info
+```
+
+Beispiel: systemd-Service für rootless Podman-Container
+```
+podman run -d --name webserver -p 8080:80 docker.io/library/nginx:alpine
+
+# systemd-Service generieren
+podman generate systemd --name webserver --files --new
+
+# Das erzeugt z. B. eine Datei:
+container-webserver.service
+
+# Datei ins richtige systemd-Verzeichnis kopieren
+mkdir -p ~/.config/systemd/user
+mv container-webserver.service ~/.config/systemd/user/
+
+# Service aktivieren und starten
+systemctl --user daemon-reexec
+systemctl --user daemon-reload
+systemctl --user enable --now container-webserver.service
+
+sudo loginctl enable-linger podman
+
+systemctl --user status container-webserver.service
+
+
+
+```
+
+
